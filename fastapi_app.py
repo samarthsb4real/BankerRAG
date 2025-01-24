@@ -1,4 +1,4 @@
-from langchain import PromptTemplate, LLMChain
+from langchain import
 from langchain.llms import CTransformers
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
