@@ -1,14 +1,15 @@
 import os
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import Chroma
-from langchain.embeddings import HuggingFaceBgeEmbeddings
-from langchain.document_loaders import DirectoryLoader
-from langchain.document_loaders import PyPDFLoader
+from langchain_community.vectorstores import Chroma
+# from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.document_loaders import DirectoryLoader
+from langchain_community.document_loaders import PyPDFLoader
 
 model_name = "BAAI/bge-large-en"
 model_kwargs = {'device': 'cpu'}
 encode_kwargs = {'normalize_embeddings': False}
-embeddings = HuggingFaceBgeEmbeddings(
+embeddings = HuggingFaceEmbeddings(
     model_name=model_name,
     model_kwargs=model_kwargs,
     encode_kwargs=encode_kwargs
@@ -21,4 +22,4 @@ texts = text_splitter.split_documents(documents)
 
 vector_store = Chroma.from_documents(texts, embeddings, collection_metadata={"hnsw:space": "cosine"}, persist_directory="stores/pet_cosine")
 
-print("Vector Store Created.......")
+print("Vector Store Created...")
