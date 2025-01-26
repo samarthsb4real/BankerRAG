@@ -1,13 +1,15 @@
 from flask import Flask, request, jsonify, render_template
 import os
 import json
-from langchain import PromptTemplate, LLMChain
-from langchain.llms import CTransformers
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import Chroma
-from langchain.chains import RetrievalQA
-from langchain.embeddings import HuggingFaceBgeEmbeddings
+from langchain_core.prompts import PromptTemplate
+from langchain.chains import LLMChain
+from langchain_community.llms import CTransformers
+from langchain_chroma import Chroma
 from langchain_community.document_loaders import PyPDFLoader
+from langchain_huggingface import HuggingFaceEmbeddings
+
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.chains import RetrievalQA
 
 app = Flask(__name__)
 
@@ -39,7 +41,7 @@ Helpful answer:
 model_name = "BAAI/bge-large-en"
 model_kwargs = {'device': 'cpu'}
 encode_kwargs = {'normalize_embeddings': False}
-embeddings = HuggingFaceBgeEmbeddings(
+embeddings = HuggingFaceEmbeddings(
     model_name=model_name,
     model_kwargs=model_kwargs,
     encode_kwargs=encode_kwargs
