@@ -22,8 +22,4 @@
 1. Gather more IB related data
 2. UI Design, more GPT-like interface
 3. Fine tuning this / trying alternate LLM models
-<<<<<<< HEAD
-4. Optimize the error handling
-=======
-4. Optimize the error handling / hallucinatios
->>>>>>> f05c8334d2ca96069390d30fc48ac226875c3a18
+4. Optimize the error handling / hallucinations
