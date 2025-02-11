@@ -15,6 +15,8 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.backends import default_backend
 import tensorflow as tf  # AI Behavioral Verification Placeholder
+import numpy as np
+import pandas as pd
 
 # =============================================
 # 2. Initialize FastAPI
@@ -89,6 +91,49 @@ def create_temp_key(data: dict):
         raise HTTPException(status_code=400, detail="User ID is required")
     temp_key = generate_temporary_key(user_id)
     return temp_key
+
+# Verify User Identity
+@app.post("/verify_behavior")
+def verify_behavior(data: dict):
+    behavior_data = data.get("behavior_data")
+    if not behavior_data:
+        raise HTTPException(status_code=400, detail="Behavior data is required")
+    
+    # If 'from_files' flag is provided, load behavior data from CSV files
+    if behavior_data == "from_files":
+        try:
+            # Load keystroke and mouse data CSV files
+            keystroke_df = pd.read_csv("keystroke_data.csv")
+            mouse_df = pd.read_csv("mouse_data.csv")
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error loading CSV files: {str(e)}")
+        
+        # Assume we only use the 'time_diff' from keystroke_data.csv and 'x', 'y' from mouse_data.csv.
+        # Note: keystroke_data.csv contains 'key' and 'time_diff'; mouse_data.csv should provide 'x', 'y', 'timestamp'.
+        keystroke_features = keystroke_df[['time_diff']].values
+        mouse_features = mouse_df[['x', 'y']].values
+        
+        # Align sample counts by taking the minimum number of rows present in both data sources
+        num_samples = min(len(keystroke_features), len(mouse_features))
+        keystroke_features = keystroke_features[:num_samples]
+        mouse_features = mouse_features[:num_samples]
+        
+        # Combine features horizontally
+        combined_features = np.hstack((keystroke_features, mouse_features))
+        # Convert to list format or any other format that your AI verification function expects
+        processed_behavior = combined_features.tolist()
+    else:
+        # Otherwise, use the provided behavior data directly
+        processed_behavior = behavior_data
+
+    # Call the AI-driven behavioral verification function
+    behavior_match = ai_behavior_verification(processed_behavior)
+    
+    # Determine status and confidence based on the AI result (here using stubbed values)
+    status = "verified" if behavior_match else "unverified"
+    confidence = 0.89 if behavior_match else 0.50
+    
+    return {"status": status, "confidence": confidence}
 
 # =============================================
 # 7. AI-Driven Behavioral Identity Verification (Stub)
